@@ -24,6 +24,10 @@ public class ClientPlayNetworkHandlerMix {
     @Final
     private MinecraftClient client;
 
+    /**
+     * @author
+     * @reason
+     */
     @Overwrite
     public void onPlaySound(PlaySoundS2CPacket packet) {
         ClientPlayNetworkHandler this1 = (ClientPlayNetworkHandler) (Object) this;
@@ -31,7 +35,7 @@ public class ClientPlayNetworkHandlerMix {
         if (client.world == null) return;
 
         if (packet.getSound().value() == SoundEvents.ENTITY_FISHING_BOBBER_SPLASH) {
-            List<FishingBobberEntity> list = client.world.getEntitiesByType(EntityType.FISHING_BOBBER, new Box(new BlockPos(packet.getX(), packet.getY(), packet.getZ())).expand(0.25f), Entity::isAlive);
+            List<FishingBobberEntity> list = client.world.getEntitiesByType(EntityType.FISHING_BOBBER, new Box(new BlockPos((int) packet.getX(), (int) packet.getY(), (int) packet.getZ())).expand(0.25f), Entity::isAlive);
 
             if (list.isEmpty()) return;
 
