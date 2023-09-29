@@ -9,7 +9,6 @@ import net.minecraft.entity.projectile.FishingBobberEntity;
 import net.minecraft.network.NetworkThreadUtils;
 import net.minecraft.network.packet.s2c.play.PlaySoundS2CPacket;
 import net.minecraft.sound.SoundEvents;
-import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Box;
 import org.spongepowered.asm.mixin.Final;
 import org.spongepowered.asm.mixin.Mixin;
@@ -35,8 +34,8 @@ public class ClientPlayNetworkHandlerMix {
         if (client.world == null) return;
 
         if (packet.getSound().value() == SoundEvents.ENTITY_FISHING_BOBBER_SPLASH) {
-            List<FishingBobberEntity> list = client.world.getEntitiesByType(EntityType.FISHING_BOBBER, new Box(new BlockPos((int) packet.getX(), (int) packet.getY(), (int) packet.getZ())).expand(0.25f), Entity::isAlive);
-
+            double distance = 0.12;
+            List<FishingBobberEntity> list = client.world.getEntitiesByType(EntityType.FISHING_BOBBER, new Box(packet.getX() - distance, packet.getY() - distance, packet.getZ() - distance, packet.getX() + distance, packet.getY() + distance, packet.getZ() + distance), Entity::isAlive);
             if (list.isEmpty()) return;
 
             for (FishingBobberEntity bobberEntity : list) {
