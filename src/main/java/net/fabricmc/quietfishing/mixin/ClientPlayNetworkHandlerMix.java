@@ -34,7 +34,7 @@ public class ClientPlayNetworkHandlerMix {
         if (client.world == null) return;
 
         if (packet.getSound().value() == SoundEvents.ENTITY_FISHING_BOBBER_SPLASH) {
-            double distance = 0.12;
+            double distance = 0.18;
             List<FishingBobberEntity> list = client.world.getEntitiesByType(EntityType.FISHING_BOBBER, new Box(packet.getX() - distance, packet.getY() - distance, packet.getZ() - distance, packet.getX() + distance, packet.getY() + distance, packet.getZ() + distance), Entity::isAlive);
             if (list.isEmpty()) return;
 
