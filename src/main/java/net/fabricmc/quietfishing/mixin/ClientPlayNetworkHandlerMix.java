@@ -5,46 +5,35 @@ import net.minecraft.client.network.ClientPlayNetworkHandler;
 import net.minecraft.client.network.OtherClientPlayerEntity;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityType;
-import net.minecraft.entity.projectile.FishingBobberEntity;
-import net.minecraft.network.NetworkThreadUtils;
 import net.minecraft.network.packet.s2c.play.PlaySoundS2CPacket;
 import net.minecraft.sound.SoundEvents;
-import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Box;
-import org.spongepowered.asm.mixin.Final;
 import org.spongepowered.asm.mixin.Mixin;
-import org.spongepowered.asm.mixin.Overwrite;
-import org.spongepowered.asm.mixin.Shadow;
-
-import java.util.List;
+import org.spongepowered.asm.mixin.injection.At;
+import org.spongepowered.asm.mixin.injection.Inject;
+import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
 @Mixin(ClientPlayNetworkHandler.class)
 public class ClientPlayNetworkHandlerMix {
-    @Shadow
-    @Final
-    private MinecraftClient client;
 
-    @Overwrite
-    public void onPlaySound(PlaySoundS2CPacket packet) {
-        ClientPlayNetworkHandler this1 = (ClientPlayNetworkHandler) (Object) this;
-        NetworkThreadUtils.forceMainThread(packet, this1, client);
+
+    @Inject(method = "onPlaySound", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/world/ClientWorld;playSound(Lnet/minecraft/entity/player/PlayerEntity;DDDLnet/minecraft/registry/entry/RegistryEntry;Lnet/minecraft/sound/SoundCategory;FFJ)V"), cancellable = true)
+    public void onPlaySound(PlaySoundS2CPacket packet, CallbackInfo ci) {
+        MinecraftClient client = MinecraftClient.getInstance();
         if (client.world == null) return;
 
         if (packet.getSound().value() == SoundEvents.ENTITY_FISHING_BOBBER_SPLASH) {
-            List<FishingBobberEntity> list = client.world.getEntitiesByType(EntityType.FISHING_BOBBER, new Box(new BlockPos(packet.getX(), packet.getY(), packet.getZ())).expand(0.25f), Entity::isAlive);
+            double distance = 0.18d;
+            var bobbers = client.world.getEntitiesByType(EntityType.FISHING_BOBBER, new Box(packet.getX() - distance, packet.getY() - distance, packet.getZ() - distance, packet.getX() + distance, packet.getY() + distance, packet.getZ() + distance), Entity::isAlive);
+            if (bobbers.isEmpty()) return;
 
-            if (list.isEmpty()) return;
-
-            for (FishingBobberEntity bobberEntity : list) {
+            for (var bobberEntity : bobbers) {
                 if (!(bobberEntity.getPlayerOwner() instanceof OtherClientPlayerEntity)) {
-                    this.client.world.playSound(this.client.player, packet.getX(), packet.getY(), packet.getZ(), packet.getSound(), packet.getCategory(), packet.getVolume(), packet.getPitch(), packet.getSeed());
                     return;
                 }
             }
-            return;
+            ci.cancel();
         }
-
-        this.client.world.playSound(this.client.player, packet.getX(), packet.getY(), packet.getZ(), packet.getSound(), packet.getCategory(), packet.getVolume(), packet.getPitch(), packet.getSeed());
     }
 
 

@@ -2,7 +2,6 @@
   "schemaVersion": 1,
   "id": "quietfishing",
   "version": "${version}",
-
   "name": "Quiet fishing mod",
   "description": "This mod removes the sound of other players' fishing bobbers",
   "authors": [
@@ -12,10 +11,8 @@
     "homepage": "www.fiverr.com/users/craft1x",
     "sources": "https://github.com/FabricMC/fabric-example-mod"
   },
-
   "license": "MIT",
   "icon": "assets/quietfishing/icon.png",
-
   "environment": "*",
   "entrypoints": {
     "main": [
@@ -25,11 +22,10 @@
   "mixins": [
     "quietfishing.mixins.json"
   ],
-
   "depends": {
-    "fabricloader": ">=0.14.14",
-    "fabric": "*",
-    "minecraft": "~1.19.3",
-    "java": ">=17"
+		"fabricloader": ">=0.14.24",
+		"minecraft": "~1.20.2",
+		"java": ">=17"
+
   }
 }
